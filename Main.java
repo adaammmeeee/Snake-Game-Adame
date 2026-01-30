@@ -19,14 +19,14 @@ public class Main {
 		GameSimulation.scenario1(gl);
 
 
-//		Gameplay gameplay = new Gameplay(gridWidth, gridLength);
+		Gameplay gameplay = new Gameplay(gridWidth, gridLength);
 
-//		obj.setBounds(0,0,gameplay.getWidth(),gameplay.getHeight());
-//		obj.setBackground(Color.DARK_GRAY);;
-//		obj.setResizable(false);
-//		obj.setVisible(true);
-//		obj.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		obj.add(gameplay);
+		obj.setBounds(0,0,gameplay.getWidth(),gameplay.getHeight());
+		obj.setBackground(Color.DARK_GRAY);;
+		obj.setResizable(false);
+		obj.setVisible(true);
+		obj.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		obj.add(gameplay);
 	}
 
 }
