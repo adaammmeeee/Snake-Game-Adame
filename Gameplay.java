@@ -1,164 +1,94 @@
 package snippet;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Random;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Gameplay extends JPanel implements KeyListener, ActionListener
 {
-	
-	private int[] snakexlength = new int[750];
-    private int[] snakeylength = new int[750];
-    
-    private boolean left = false;
-    private boolean right = false;
-    private boolean up = false;
-    private boolean down = false;
-    
-    private ImageIcon rightmouth;
-    private ImageIcon upmouth;
-    private ImageIcon downmouth;
-    private ImageIcon leftmouth;
-    
-    private int lengthofsnake = 3;
-    
+	private int snakeLength = 3;
+	private final int x;
+	private final int y;
+
+	private GameLogicBit gl;
+
+	// Constants for printing
+	private final int topBorder = 4;
+	private final int botBorder = 1;
+	private final int rightBorder = 1;
+	private final int leftBorder = 1;
+
+	private final int pixelSize = 25;
+
+    private final DrawHelper drawHelper;
+
+	private boolean firstPaint = true;
+
+	// Time attribute
     private Timer timer;
-    private int delay = 100;
-    private ImageIcon snakeimage;
-    
-    private int[] enemyxpos= {25,50,75,100,125,150,175,200,225,250,275,300,325,350,375,400,425,450,475,500,525,550,575,600,625,650,675,700,725,750,775,800,825,850};
-    private int[] enemyypos= {75,100,125,150,175,200,225,250,275,300,325,350,375,400,425,450,475,500,525,550,575,600,625};
-    private ImageIcon enemyimage;
-    private Random random=new Random();
-    private int xpos =random.nextInt(34);
-    private int ypos=random.nextInt(23);
-    
-    private int score=0;
-    private int moves = 0;
-    
-    private ImageIcon titleImage;
-    
-	public Gameplay()
+    private final int delay = 100;
+
+    private int score = 0;
+
+	public Gameplay(int x, int y)
 	{
+		this.x = x;
+		this.y = y;
+		drawHelper = new DrawHelper(x,y, topBorder, botBorder, rightBorder, leftBorder, pixelSize);
+		gl = new GameLogicBit(x,y, snakeLength);
+		reset();
+		// Game settings
 		addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         timer = new Timer(delay, this);
         timer.start();
 	}
+
 	public void paint (Graphics g)
 	{
-		if(moves == 0)
-        {
-            snakexlength[2] = 50; 
-            snakexlength[1] = 75;
-            snakexlength[0] = 100;
-            
-            snakeylength[2] = 100;
-            snakeylength[1] = 100;
-            snakeylength[0] = 100;
-            
+		drawHelper.drawMenu(g, score, snakeLength);
+		if (firstPaint)
+		{
+			// First paint of the snake
+			drawHelper.drawBackground(g);
+			drawHelper.drawSnake(g, gl.getSnakePosList());
+			// drawing enemy
+			Position enemyPos = gl.generateFood();
+			drawHelper.drawPixel(enemyPos.x, enemyPos.y,g,Color.red);
+			firstPaint = false;
+		}
+		else {
+			// We shift the snake
+			// We erase the queue
+			Position queue = gl.getSnakePosList().getFirst();
+			drawHelper.drawPixel(queue.x, queue.y, g, Color.black);
+			if (!gl.shiftSnake())
+			{
+				// we redraw the queue
+				queue = gl.getSnakePosList().getFirst();
+				drawHelper.drawPixel(queue.x, queue.y, g, Color.green);
+				// Paint the new food
+				Position enemyPos = gl.generateFood();
+				drawHelper.drawPixel(enemyPos.x, enemyPos.y,g,Color.red);
+				score++;
+				snakeLength++;
+			}
+			// reDraw the head (shift effect)
+			Position headPos = gl.getSnakePosList().getLast();
+			drawHelper.drawPixel(headPos.x, headPos.y, g, Color.green);
+
+			if(gl.getCollision())
+			{
+				reset();
+			}
+
         }
-		//draw title image border
-		g.setColor(Color.WHITE);
-		g.drawRect(24, 10, 851, 51);
-		
-		//draw the title image
-		titleImage= new ImageIcon("snaketitle.jpg");
-		titleImage.paintIcon(this, g, 25, 11);
-		
-		//draw border for gameplay
-		g.setColor(Color.WHITE);
-		g.drawRect(24, 74, 851, 577);
-		
-		//draw background for the gameplay
-		g.setColor(Color.black);
-		g.fillRect(25, 75, 850, 575);
-		
-		
-		//draw scores
-		g.setColor(Color.WHITE);
-		g.setFont(new Font("arial",Font.PLAIN, 14));
-		g.drawString("Scores: "+score, 780, 30);
-		
-		g.setColor(Color.WHITE);
-		g.setFont(new Font("arial",Font.PLAIN, 14));
-		g.drawString("Length: "+lengthofsnake, 780, 50);
-		
-		rightmouth = new ImageIcon("rightmouth.png");
-        rightmouth.paintIcon(this, g, snakexlength[0], snakeylength[0]);
-        
-        for(int a = 0; a<lengthofsnake; a++)
-        {
-            if(a==0 && right)
-            {
-                rightmouth = new ImageIcon("rightmouth.png");
-                rightmouth.paintIcon(this, g, snakexlength[a], snakeylength[a]);
-            }
-            
-            if(a==0 && left)
-            {
-                leftmouth = new ImageIcon("leftmouth.png");
-                leftmouth.paintIcon(this, g, snakexlength[a], snakeylength[a]);
-            }
-            
-            if(a==0 && down)
-            {
-                downmouth = new ImageIcon("downmouth.png");
-                downmouth.paintIcon(this, g, snakexlength[a], snakeylength[a]);
-            }
-            
-            if(a==0 && up)
-            {
-                upmouth = new ImageIcon("upmouth.png");
-                upmouth.paintIcon(this, g, snakexlength[a], snakeylength[a]);
-            }
-        
-            if(a!=0)
-            {
-                snakeimage = new ImageIcon("snakeimage.png");
-                snakeimage.paintIcon(this, g, snakexlength[a], snakeylength[a]);
-            }
-                
-        }
-        
-        enemyimage=new ImageIcon("enemy.png");
-        
-        if((enemyxpos[xpos]== snakexlength[0] && enemyypos[ypos]==snakeylength[0]))
-        {
-        	lengthofsnake++;
-        	score++;
-        	xpos=random.nextInt(34);
-        	ypos=random.nextInt(23);
-        }
-        
-        enemyimage.paintIcon(this, g, enemyxpos[xpos], enemyypos[ypos]);
-        for(int b=1;b<lengthofsnake;b++)
-        {
-        	if(snakexlength[b]==snakexlength[0] && snakeylength[b]==snakeylength[0])
-        	{
-        		right=false;
-        		left=false;
-        		up=false;
-        		down=false;
-        		
-        		g.setColor(Color.WHITE);
-        		g.setFont(new Font("arial",Font.BOLD, 50));
-        		g.drawString("GAME OVER", 300, 300);
-        		
-        		g.setFont(new Font("arial",Font.BOLD, 20));
-        		g.drawString("Press Space to Restart", 350, 340);
-        	}
-        }
-        
         g.dispose();
 	}
 	@Override
@@ -169,81 +99,36 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
     @Override
     public void keyPressed(KeyEvent e)
     {
-    	if(e.getKeyCode()==KeyEvent.VK_SPACE)
-    	{
-    		moves=0;
-    		score=0;
-    		lengthofsnake=3;
-    		repaint();
-    	}
-    	if(e.getKeyCode()==KeyEvent.VK_RIGHT)
-    	{
-    		moves++;
-    		right=true;
-    		if(!left)
-    		{
-    			right=true;
-    		}
-    		else
-    		{
-    			right=false;
-    			left=true;
-    		}
-    		up=false;
-    		down=false;
-    	}
-    	if(e.getKeyCode()==KeyEvent.VK_LEFT)
-    	{
-    		moves++;
-    		left=true;
-    		if(!right)
-    		{
-    			left=true;
-    		}
-    		else
-    		{
-    			left=false;
-    			right=true;
-    		}
-    		up=false;
-    		down=false;
-    	}
-    	if(e.getKeyCode()== KeyEvent.VK_UP)
-    	{
-    		moves++;
-    		up=true;
-    		if(!down)
-    		{
-    			up=true;
-    		}
-    		else
-    		{
-    			up=false;
-    			down=true;
-    		}
-    		left=false;
-    		right=false;
-    	}
-    	if(e.getKeyCode()== KeyEvent.VK_DOWN)
-    	{
-    		moves++;
-    		down=true;
-    		if(!up)
-    		{
-    			down=true;
-    		}
-    		else
-    		{
-    			down=false;
-    			up=true;
-    		}
-    		left=false;
-    		right=false;
-    	}
+		switch (e.getKeyCode())
+		{
+			case KeyEvent.VK_RIGHT:
+				if (gl.getCurrentDirection() != GameLogicBit.Direction.LEFT)
+					gl.setCurrentDirection(GameLogicBit.Direction.RIGHT);
+				break;
+
+			case KeyEvent.VK_LEFT:
+				if (gl.getCurrentDirection() != GameLogic.Direction.RIGHT)
+					gl.setCurrentDirection(GameLogic.Direction.LEFT);
+				break;
+
+			case KeyEvent.VK_UP:
+				if (gl.getCurrentDirection() != GameLogic.Direction.DOWN)
+					gl.setCurrentDirection(GameLogicBit.Direction.UP);
+				break;
+
+			case KeyEvent.VK_DOWN:
+				if (gl.getCurrentDirection() != GameLogic.Direction.UP)
+					gl.setCurrentDirection(GameLogic.Direction.DOWN);
+				break;
+			case KeyEvent.VK_SPACE:
+				reset();
+				break;
+		}
     }
 
 
-    @Override
+
+	@Override
     public void keyReleased(KeyEvent ke) {
     }
 
@@ -251,100 +136,31 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
     public void actionPerformed(ActionEvent e)
     {
     	timer.start();
-    	if(right)
-    	{
-    		for(int r=lengthofsnake-1;r>=0;r--)
-    		{
-    			snakeylength[r+1]=snakeylength[r];
-    		}
-    		for(int r=lengthofsnake;r>=0;r--)
-    		{
-    			if(r==0)
-    			{
-    				snakexlength[r]=snakexlength[r]+25;
-    			}
-    			else
-    			{
-    				snakexlength[r]=snakexlength[r-1];
-    			}
-    			if(snakexlength[r]>850)
-    			{
-    				snakexlength[r]=25;
-    			}
-    		}
-    		repaint();
-    	}
-    	if(left)
-    	{
-    		for(int r=lengthofsnake-1;r>=0;r--)
-    		{
-    			snakeylength[r+1]=snakeylength[r];
-    		}
-    		for(int r=lengthofsnake;r>=0;r--)
-    		{
-    			if(r==0)
-    			{
-    				snakexlength[r]=snakexlength[r]-25;
-    			}
-    			else
-    			{
-    				snakexlength[r]=snakexlength[r-1];
-    			}
-    			if(snakexlength[r]<25)
-    			{
-    				snakexlength[r]=850;
-    			}
-    		}
-    		repaint();
-    	}
-    	if(up)
-    	{
-    		for(int r=lengthofsnake-1;r>=0;r--)
-    		{
-    			snakexlength[r+1]=snakexlength[r];
-    		}
-    		for(int r=lengthofsnake;r>=0;r--)
-    		{
-    			if(r==0)
-    			{
-    				snakeylength[r]=snakeylength[r]-25;
-    			}
-    			else
-    			{
-    				snakeylength[r]=snakeylength[r-1];
-    			}
-    			if(snakeylength[r]<75)
-    			{
-    				snakeylength[r]=625;
-    			}
-    		}
-    		repaint();
-    	}
-    	if(down)
-    	{
-    		for(int r=lengthofsnake-1;r>=0;r--)
-    		{
-    			snakexlength[r+1]=snakexlength[r];
-    		}
-    		for(int r=lengthofsnake;r>=0;r--)
-    		{
-    			if(r==0)
-    			{
-    				snakeylength[r]=snakeylength[r]+25;
-    			}
-    			else
-    			{
-    				snakeylength[r]=snakeylength[r-1];
-    			}
-    			if(snakeylength[r]>625)
-    			{
-    				snakeylength[r]=75;
-    			}
-    		}
-    		repaint();
-    	}
-    }
+		gl.updateHeadPosition();
+		gl.hasEaten();
+		gl.testCollision();
+        repaint();
+	}
+
+	private void reset()
+	{
+		// Call the gc ?
+		firstPaint = true;
+		snakeLength = 3;
+		gl = new GameLogicBit(x,y,snakeLength);
+		score = 0;
+		gl.setCurrentDirection(GameLogicBit.Direction.RIGHT);
+	}
+
+	public int getWidth() {
+		return x * pixelSize + rightBorder * pixelSize + leftBorder * pixelSize;
+	}
+
+	public int getHeight() {
+		return y * pixelSize + topBorder * pixelSize + botBorder * pixelSize;
+	}
 }
+
 
 
 

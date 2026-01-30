@@ -9,14 +9,24 @@ public class Main {
 	public static void main(String[] args) {
 		
 		JFrame obj = new JFrame();
-		Gameplay gameplay= new Gameplay();
-		
-		obj.setBounds(10,10,905,700);
-		obj.setBackground(Color.DARK_GRAY);;
-		obj.setResizable(false);
-		obj.setVisible(true);
-		obj.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		obj.add(gameplay);
+
+		int gridWidth = 30;
+		int gridLength = 20;
+		int snakeLength = 3;
+
+		GameLogic gl = new GameLogicBit(gridWidth, gridLength, snakeLength);
+
+		GameSimulation.scenario1(gl);
+
+
+//		Gameplay gameplay = new Gameplay(gridWidth, gridLength);
+
+//		obj.setBounds(0,0,gameplay.getWidth(),gameplay.getHeight());
+//		obj.setBackground(Color.DARK_GRAY);;
+//		obj.setResizable(false);
+//		obj.setVisible(true);
+//		obj.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		obj.add(gameplay);
 	}
 
 }
