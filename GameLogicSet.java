@@ -2,13 +2,19 @@ package snippet;
 
 import java.util.*;
 
-public class GameLogicList extends GameLogic {
+public class GameLogicSet extends GameLogic {
     private final List<Position> foodPos = new LinkedList<>();
+    private final Set<Position> snakePosSet = new HashSet<>();
     private final Set<Position> availablePos = new HashSet<>(x*y);
 
-    public GameLogicList(int x, int y, int snakeLength)
+
+    public GameLogicSet(int x, int y, int snakeLength)
     {
         super(x,y, snakeLength);
+        for(int i=0; i<snakeLength; i++)
+        {
+            snakePosSet.add(new Position(i,0));
+        }
         for(int i=3; i<x;i++)
         {
             for(int j=0; j<y; j++)
@@ -17,18 +23,19 @@ public class GameLogicList extends GameLogic {
             }
         }
     }
-
     @Override
     public boolean shiftSnake() {
         Position headPos = new Position(newHeadPosition);
         snakePosList.add(headPos);
+        snakePosSet.add(headPos);
         availablePos.remove(headPos);
         if(!hasEaten)
         {
-            // Erase the queue, for the list
+            // Erase the queue, for the list and the bitset
             Position queue = snakePosList.getFirst();
-            snakePosList.removeFirst();
+            snakePosSet.remove(queue);
             availablePos.add(queue);
+            snakePosList.removeFirst();
             return true;
         }
         else
@@ -36,6 +43,7 @@ public class GameLogicList extends GameLogic {
             // Else no need to erase the queue, the snake ate and is bigger
             hasEaten = false;
             return false;
+
         }
     }
 
@@ -53,21 +61,14 @@ public class GameLogicList extends GameLogic {
             }
         }
         System.out.println("End of the game gg");
-        return new Position(-1,-1);
-    }
+        return new Position(-1,-1);    }
 
     @Override
     public boolean testCollision() {
-        Position head = snakePosList.getFirst();
-        Iterator<Position> it = snakePosList.iterator();
-        it.next();
-        while (it.hasNext())
+        if (snakePosSet.contains(newHeadPosition))
         {
-            if(it.next().equals(head))
-            {
-                collision = true;
-                return true;
-            }
+            collision = true;
+            return true;
         }
         return false;
     }

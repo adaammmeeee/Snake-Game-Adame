@@ -15,7 +15,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
 	private final int x;
 	private final int y;
 
-	private GameLogicBit gl;
+	private GameLogic gl;
 
 	// Constants for printing
 	private final int topBorder = 4;
@@ -35,12 +35,12 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
 
     private int score = 0;
 
-	public Gameplay(int x, int y)
+	public Gameplay(int x, int y, GameLogic gl)
 	{
 		this.x = x;
 		this.y = y;
 		drawHelper = new DrawHelper(x,y, topBorder, botBorder, rightBorder, leftBorder, pixelSize);
-		gl = new GameLogicBit(x,y, snakeLength);
+		this.gl = gl;
 		reset();
 		// Game settings
 		addKeyListener(this);

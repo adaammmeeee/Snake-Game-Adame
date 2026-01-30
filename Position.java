@@ -19,4 +19,17 @@ public class Position {
     public String toString() {
         return "(" + x + "," + y + ")";
     }
+
+    @Override
+    public boolean equals(Object b)
+    {
+        if(b instanceof Position)
+        {
+            if ( (((Position) b).x == this.x) && (((Position) b).y == this.y) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

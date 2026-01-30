@@ -1,6 +1,7 @@
 package snippet;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 public abstract class GameLogic {
     protected int x,y, snakeLength;
@@ -12,6 +13,8 @@ public abstract class GameLogic {
 
     protected Direction currentDirection = Direction.RIGHT;
     protected Position newHeadPosition;
+
+    protected Random seed = new Random();
 
 
     public enum Direction {
@@ -65,8 +68,29 @@ public abstract class GameLogic {
     public abstract boolean testCollision();
 
     /**
-     * Set the attribute hasEaten to true if the snake head touched an enemy
+     * Set the attribute hasEaten to true if the snake head touched an food
      */
     public abstract void hasEaten();
+
+    ///////////////////// GETTERS and SETTERS ////////////////////////
+
+    public void setCurrentDirection(Direction currentDirection)
+    {
+        this.currentDirection = currentDirection;
+    }
+
+    public Direction getCurrentDirection()
+    {
+        return this.currentDirection;
+    }
+
+    public LinkedList<Position> getSnakePosList()
+    {
+        return this.snakePosList;
+    }
+
+    public boolean getCollision() {
+        return collision;
+    }
 
 }

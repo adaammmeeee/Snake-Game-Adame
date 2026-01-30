@@ -5,16 +5,14 @@ import java.util.List;
 
 public class GameLogicBit extends GameLogic {
 
-    private final BitSet enemyPos;
+    private final BitSet foodPos;
     private final BitSet snakePosBit;
-
-    Random seed = new Random();
 
     public GameLogicBit(int x, int y, int snakeLength)
     {
         super(x,y,snakeLength);
 
-        enemyPos = new BitSet(x*y);
+        foodPos = new BitSet(x*y);
         snakePosBit = new BitSet(x*y);
 
         for(int i=0; i<snakeLength; i++)
@@ -62,12 +60,12 @@ public class GameLogicBit extends GameLogic {
     public boolean shiftSnake()
     {
         snakePosList.add(new Position(newHeadPosition));
-        snakePosBit.xor(positionToBitSet(newHeadPosition));
+        snakePosBit.set(positionToBitIndex(newHeadPosition));
         if(!hasEaten)
         {
             // Erase the queue, for the list and the bitset
             Position queue = snakePosList.getFirst();
-            snakePosBit.flip(positionToBitIndex(queue));
+            snakePosBit.set(positionToBitIndex(queue),false);
             snakePosList.removeFirst();
             return true;
         }
@@ -83,7 +81,7 @@ public class GameLogicBit extends GameLogic {
     ///////////////////// FOOD GENERATION //////////////////////////
 
     /** Randomly generate food on the grid,
-     *  Update the enemyPos bitset and return the position of the food generated */
+     *  Update the foodPos bitset and return the position of the food generated */
     @Override
     public Position generateFood()
     {
@@ -104,7 +102,7 @@ public class GameLogicBit extends GameLogic {
         int randomPos = seed.nextInt(magicBag.size());
         int randomBitIndex = magicBag.get(randomPos);
 
-        enemyPos.set(randomBitIndex);
+        foodPos.set(randomBitIndex);
         return bitToPosition(randomBitIndex);
     }
 
@@ -113,9 +111,8 @@ public class GameLogicBit extends GameLogic {
     /** Set the attribute collision to true if the snake head touched its body */
     @Override
     public boolean testCollision() {
-        BitSet headPos = positionToBitSet(newHeadPosition);
-        headPos.and(snakePosBit);
-        if(!headPos.isEmpty())
+        int newHeadPos = positionToBitIndex(newHeadPosition);
+        if (snakePosBit.get(newHeadPos))
         {
             collision = true;
             return true;
@@ -124,36 +121,15 @@ public class GameLogicBit extends GameLogic {
     }
 
     /**
-     * Set the attribute hasEaten to true if the snake head touched an enemy
+     * Set the attribute hasEaten to true if the snake head touched an food
      */
     @Override
     public void hasEaten() {
         int headPosBitIndex = positionToBitIndex(newHeadPosition);
-        if (enemyPos.get(headPosBitIndex))
+        if (foodPos.get(headPosBitIndex))
         {
             hasEaten = true;
-            enemyPos.set(headPosBitIndex, false);
+            foodPos.set(headPosBitIndex, false);
         }
-    }
-
-    ///////////////////// GETTERS and SETTERS ////////////////////////
-
-    public void setCurrentDirection(Direction currentDirection)
-    {
-        this.currentDirection = currentDirection;
-    }
-
-    public Direction getCurrentDirection()
-    {
-        return this.currentDirection;
-    }
-
-    public LinkedList<Position> getSnakePosList()
-    {
-        return this.snakePosList;
-    }
-
-    public boolean getCollision() {
-        return collision;
     }
 }
