@@ -6,23 +6,22 @@ import java.util.ArrayList;
 public class GameSimulation {
 
     public static void scenario(GameLogic gl) {
-        long startShift;
-        long startHasEaten;
-        long startTestCollision;
+        long start;
+        long end;
+        long total;
+        // Impossible to reach this food
+        gl.snakePosList.add(new Position(0,1, gl.x));
 
-        long endShift;
-        long endHasEaten;
-        long endTestCollision;
-
-        long totalShift = 0;
-        long totalHasEaten = 0;
-        long totalTestCollision = 0;
         // Warmup part
         for(int i=0; i<100_000; i++)
         {
             gl.shiftSnake();
             gl.updateHeadPosition();
             gl.hasEaten();
+            if (gl.hasEaten)
+            {
+                System.out.println("Not supposed to eat, cancel");
+            }
             if (gl.testCollision())
             {
                 System.out.println("Collision, cancel");
@@ -30,28 +29,16 @@ public class GameSimulation {
         }
         System.out.println("Start of scenario with grid size " + gl.x + "x" + gl.y + " and a length snake : " + gl.snakeLength);
         // Measure time
+        start = System.nanoTime();
         for(int i=0; i<100_000; i++)
         {
-            startShift = System.nanoTime();
             gl.shiftSnake();
-            endShift = System.nanoTime();
-            totalShift += endShift-startShift;
-
             gl.updateHeadPosition();
-
-            startHasEaten = System.nanoTime();
             gl.hasEaten();
-            endHasEaten = System.nanoTime();
-            totalHasEaten += endHasEaten-startHasEaten;
-
-            startTestCollision = System.nanoTime();
             gl.testCollision();
-            endTestCollision = System.nanoTime();
-            totalTestCollision += endTestCollision-startTestCollision;
-
         }
-            System.out.println("Duration method shiftSnake    : " + totalShift);
-            System.out.println("Duration method hasEaten      : " + totalHasEaten);
-            System.out.println("Duration method TestCollision : " + totalTestCollision);
+        end = System.nanoTime();
+        total = end-start;
+        System.out.println("Duration : " + total);
     }
 }

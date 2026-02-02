@@ -25,3 +25,5 @@ We tried different data structure to represent the snake (set, list and bitSet) 
 To do measurement we need to simulate a game, done with `GameSimulation.java`
 
 ## Result
+
+![plot](./res_plot.png)

@@ -54,11 +54,13 @@ public class GameLogicSet extends GameLogic {
         int cpt = 0;
         while (it.hasNext())
         {
+            Position food = it.next();
             if (cpt == randomIndex)
             {
-                foodPos.add(it.next());
-                return it.next();
+                foodPos.add(food);
+                return food;
             }
+            cpt++;
         }
         System.out.println("End of the game gg");
         return new Position(-1,-1,x);    }

@@ -93,4 +93,7 @@ public abstract class GameLogic {
         return collision;
     }
 
+    //////////////////////// ONLY FOR SIMULATION ///////////////////////////////
+
+
 }
