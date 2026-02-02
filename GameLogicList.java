@@ -13,14 +13,14 @@ public class GameLogicList extends GameLogic {
         {
             for(int j=0; j<y; j++)
             {
-                availablePos.add(new Position(i,j));
+                availablePos.add(new Position(i,j,x));
             }
         }
     }
 
     @Override
     public boolean shiftSnake() {
-        Position headPos = new Position(newHeadPosition);
+        Position headPos = new Position(newHeadPosition, x);
         snakePosList.add(headPos);
         availablePos.remove(headPos);
         if(!hasEaten)
@@ -53,7 +53,7 @@ public class GameLogicList extends GameLogic {
             }
         }
         System.out.println("End of the game gg");
-        return new Position(-1,-1);
+        return new Position(-1,-1,x);
     }
 
     @Override

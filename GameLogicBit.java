@@ -30,7 +30,7 @@ public class GameLogicBit extends GameLogic {
     public BitSet positionToBitSet(Position p)
     {
         BitSet b = new BitSet(x*y);
-        int pos = p.x +  p.y*x;
+        int pos = p.a +  p.b *x;
         b.set(pos);
         return b;
     }
@@ -39,13 +39,13 @@ public class GameLogicBit extends GameLogic {
     * corresponding to the position in a grid x*y */
     public int positionToBitIndex(Position p)
     {
-        return p.x +  p.y*x;
+        return p.a +  p.b *x;
     }
 
     /** Convert an index (from a BitSet) to its corresponding position in a grid */
     public Position bitToPosition(int bitIndex)
     {
-        return new Position(bitIndex%x, bitIndex/x);
+        return new Position(bitIndex%x, bitIndex/x, x);
     }
 
 
@@ -59,7 +59,7 @@ public class GameLogicBit extends GameLogic {
     @Override
     public boolean shiftSnake()
     {
-        snakePosList.add(new Position(newHeadPosition));
+        snakePosList.add(new Position(newHeadPosition,x));
         snakePosBit.set(positionToBitIndex(newHeadPosition));
         if(!hasEaten)
         {

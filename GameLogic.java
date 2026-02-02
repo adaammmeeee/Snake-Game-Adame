@@ -32,11 +32,11 @@ public abstract class GameLogic {
 
         for(int i=0; i<snakeLength; i++)
         {
-            Position buffer = new Position(i,0);
+            Position buffer = new Position(i,0,x);
             snakePosList.add(buffer);
         }
 
-        newHeadPosition = new Position(snakeLength,0);
+        newHeadPosition = new Position(snakeLength,0,x);
 
     }
 
@@ -51,13 +51,13 @@ public abstract class GameLogic {
     public void updateHeadPosition()
     {
         Position headPos = snakePosList.getLast();
-        newHeadPosition.x = headPos.x;
-        newHeadPosition.y = headPos.y;
+        newHeadPosition.a = headPos.a;
+        newHeadPosition.b = headPos.b;
         switch (currentDirection) {
-            case UP -> newHeadPosition.y    = Math.floorMod(newHeadPosition.y-1, y);
-            case DOWN -> newHeadPosition.y  = Math.floorMod(newHeadPosition.y+1, y) ;
-            case RIGHT -> newHeadPosition.x = Math.floorMod(newHeadPosition.x+1, x);
-            case LEFT -> newHeadPosition.x  = Math.floorMod(newHeadPosition.x-1, x);
+            case UP -> newHeadPosition.b = Math.floorMod(newHeadPosition.b -1, y);
+            case DOWN -> newHeadPosition.b = Math.floorMod(newHeadPosition.b +1, y) ;
+            case RIGHT -> newHeadPosition.a = Math.floorMod(newHeadPosition.a +1, x);
+            case LEFT -> newHeadPosition.a = Math.floorMod(newHeadPosition.a -1, x);
         }
     }
 

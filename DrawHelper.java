@@ -78,7 +78,7 @@ public class DrawHelper {
         // Drawing the body
         for(var bodyPosition : snakePosList)
         {
-            drawPixel(bodyPosition.x,bodyPosition.y,g,Color.green);
+            drawPixel(bodyPosition.a,bodyPosition.b,g,Color.green);
         }
     }
 

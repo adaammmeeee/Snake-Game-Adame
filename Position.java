@@ -1,23 +1,27 @@
 package snippet;
 
 public class Position {
-    public int x;
-    public int y;
-    public Position(int x, int y)
+    public int a;
+    public int b;
+
+    // Use for hashcode
+    public int maxA;
+    public Position(int a, int b, int maxA)
     {
-        this.x = x;
-        this.y = y;
+        this.a = a;
+        this.b = b;
+        this.maxA = maxA;
     }
 
-    public Position(Position p)
+    public Position(Position p, int maxA)
     {
-        this.x = p.x;
-        this.y = p.y;
+        this.a = p.a;
+        this.b = p.b;
     }
 
     @Override
     public String toString() {
-        return "(" + x + "," + y + ")";
+        return "(" + a + "," + b + ")";
     }
 
     @Override
@@ -25,11 +29,16 @@ public class Position {
     {
         if(b instanceof Position)
         {
-            if ( (((Position) b).x == this.x) && (((Position) b).y == this.y) )
+            if ( (((Position) b).a == this.a) && (((Position) b).b == this.b) )
             {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return a + b*maxA;
     }
 }

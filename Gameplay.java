@@ -11,7 +11,8 @@ import javax.swing.Timer;
 
 public class Gameplay extends JPanel implements KeyListener, ActionListener
 {
-	private int snakeLength = 3;
+	private int snakeLength;
+	private int snakeLengthDefault;
 	private final int x;
 	private final int y;
 
@@ -41,6 +42,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
 		this.y = y;
 		drawHelper = new DrawHelper(x,y, topBorder, botBorder, rightBorder, leftBorder, pixelSize);
 		this.gl = gl;
+		snakeLengthDefault = gl.snakeLength;
 		reset();
 		// Game settings
 		addKeyListener(this);
@@ -60,28 +62,28 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
 			drawHelper.drawSnake(g, gl.getSnakePosList());
 			// drawing enemy
 			Position enemyPos = gl.generateFood();
-			drawHelper.drawPixel(enemyPos.x, enemyPos.y,g,Color.red);
+			drawHelper.drawPixel(enemyPos.a, enemyPos.b,g,Color.red);
 			firstPaint = false;
 		}
 		else {
 			// We shift the snake
 			// We erase the queue
 			Position queue = gl.getSnakePosList().getFirst();
-			drawHelper.drawPixel(queue.x, queue.y, g, Color.black);
+			drawHelper.drawPixel(queue.a, queue.b, g, Color.black);
 			if (!gl.shiftSnake())
 			{
 				// we redraw the queue
 				queue = gl.getSnakePosList().getFirst();
-				drawHelper.drawPixel(queue.x, queue.y, g, Color.green);
+				drawHelper.drawPixel(queue.a, queue.b, g, Color.green);
 				// Paint the new food
 				Position enemyPos = gl.generateFood();
-				drawHelper.drawPixel(enemyPos.x, enemyPos.y,g,Color.red);
+				drawHelper.drawPixel(enemyPos.a, enemyPos.b,g,Color.red);
 				score++;
 				snakeLength++;
 			}
 			// reDraw the head (shift effect)
 			Position headPos = gl.getSnakePosList().getLast();
-			drawHelper.drawPixel(headPos.x, headPos.y, g, Color.green);
+			drawHelper.drawPixel(headPos.a, headPos.b, g, Color.green);
 
 			if(gl.getCollision())
 			{
@@ -146,8 +148,8 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener
 	{
 		// Call the gc ?
 		firstPaint = true;
-		snakeLength = 3;
-		gl = new GameLogicBit(x,y,snakeLength);
+		snakeLength = snakeLengthDefault;
+		gl = new GameLogicBit(x,y,snakeLengthDefault);
 		score = 0;
 		gl.setCurrentDirection(GameLogicBit.Direction.RIGHT);
 	}
